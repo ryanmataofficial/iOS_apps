@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeDetailView: View {
     
     var recipe:Recipe
+    @State var selectedServingSize = 2
     
     var body: some View {
         ScrollView {
@@ -20,14 +21,36 @@ struct RecipeDetailView: View {
                     .resizable()
                     .scaledToFill()
                 
+                // MARK: RECIPE TITLE
+                Text(recipe.name)
+                    .bold()
+                    .padding(.top, 20)
+                    .padding(.leading)
+                    .font(.largeTitle)
+                
+                
+                // MARK: SERVING SIZE PICKER
+                VStack(alignment: .leading) {
+                    Text("Serving your serving size:")
+                    Picker("", selection: $selectedServingSize) {
+                        Text("2").tag(2)
+                        Text("4").tag(4)
+                        Text("6").tag(6)
+                        Text("8").tag(8)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .frame(width: 160)
+                }
+                .padding()
+                
                 // MARK: Ingredienets
                 VStack(alignment: .leading) {
                     Text("Ingredients")
                         .font(.headline)
                         .padding([.bottom, .top], 5)
                     
-                    ForEach (recipe.ingredients, id:\.self) { item in
-                        Text("- " + item)
+                    ForEach (recipe.ingredients) { item in
+                        Text("• " + RecipeModel.getPortion(ingredient: item, recipeServings: recipe.servings, targetServings: selectedServingSize) + " " + item.name.lowercased())
                     }
                 }
                 .padding(.horizontal)
@@ -49,7 +72,6 @@ struct RecipeDetailView: View {
                 .padding(.horizontal)
             }
         }
-        .navigationBarTitle(recipe.name)
     }
 }
 
